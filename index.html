@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GridGuard — AI-powered rural transformer intelligence platform for DISCOM operations. Predict failures, understand cascade risks, and prioritize maintenance.">
+  <title>GridGuard — Transformer Intelligence Platform</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet.js -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js + Annotation plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       NOTIFICATION CONTAINER
+       ============================================================ -->
+  <div id="notification-container" class="notification-container"></div>
+
+  <!-- ============================================================
+       DETAIL PANEL OVERLAY
+       ============================================================ -->
+  <div id="detail-overlay" class="detail-overlay"></div>
+
+  <!-- ============================================================
+       TRANSFORMER DETAIL PANEL (Slide-over)
+       ============================================================ -->
+  <div id="detail-panel" class="detail-panel">
+    <div class="detail-panel-header">
+      <span class="detail-panel-title">Transformer Detail</span>
+      <button id="detail-close" class="detail-close" aria-label="Close panel">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="detail-panel-body" id="detail-content">
+      <!-- Dynamically populated -->
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MOBILE MENU TOGGLE
+       ============================================================ -->
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation">
+    <i data-lucide="menu"></i>
+  </button>
+
+  <!-- ============================================================
+       APP LAYOUT
+       ============================================================ -->
+  <div class="app-layout">
+
+    <!-- ========================================================
+         SIDEBAR
+         ======================================================== -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <div class="brand-icon">
+            <i data-lucide="zap"></i>
+          </div>
+          <span class="brand-name">GRIDGUARD</span>
+        </div>
+        <div class="brand-sub">Transformer Intelligence</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="command-center">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Command Center</span>
+        </button>
+        <button class="nav-item" data-page="risk-map">
+          <i data-lucide="map"></i>
+          <span>Risk Map</span>
+        </button>
+        <button class="nav-item" data-page="predictions">
+          <i data-lucide="trending-up"></i>
+          <span>Predictions</span>
+        </button>
+        <button class="nav-item" data-page="network">
+          <i data-lucide="git-branch"></i>
+          <span>Network</span>
+        </button>
+        <button class="nav-item" data-page="priorities">
+          <i data-lucide="list-ordered"></i>
+          <span>Priorities</span>
+        </button>
+        <button class="nav-item" data-page="reports">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Reports</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <span class="system-status-dot"></span>
+          <span>All systems operational</span>
+        </div>
+        <div class="sidebar-profile">
+          <div class="profile-avatar">
+            <i data-lucide="user"></i>
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">Admin</span>
+            <span class="profile-role">DISCOM Operations</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========================================================
+         MAIN CONTENT
+         ======================================================== -->
+    <main class="main-content">
+
+      <!-- ======================================================
+           PAGE: COMMAND CENTER
+           ====================================================== -->
+      <div id="page-command-center" class="page active" style="display:block">
+        <div class="page-inner">
+
+          <!-- Header -->
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Transformer Intelligence</span>
+            </div>
+            <h1>Predict failures before they become outages.</h1>
+            <p>Monitor transformer health, identify emerging failure patterns and prioritize intervention before disruption reaches the field.</p>
+            <div class="system-badge">
+              <span class="system-badge-dot"></span>
+              System Operational
+            </div>
+          </div>
+
+          <!-- KPI Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-card-icon navy">
+                <i data-lucide="cpu"></i>
+              </div>
+              <div class="kpi-number" data-counter="10248">0</div>
+              <div class="kpi-label">Transformers Monitored</div>
+              <span class="kpi-trend down"><i data-lucide="trending-up"></i> +2.4%</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-card-icon warning">
+                <i data-lucide="alert-triangle"></i>
+              </div>
+              <div class="kpi-number" data-counter="1284">0</div>
+              <div class="kpi-label">At Risk</div>
+              <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12.3%</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-card-icon critical">
+                <i data-lucide="alert-circle"></i>
+              </div>
+              <div class="kpi-number" data-counter="87">0</div>
+              <div class="kpi-label">Critical</div>
+              <span class="kpi-trend up"><i data-lucide="trending-up"></i> +8 this week</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-card-icon accent">
+                <i data-lucide="activity"></i>
+              </div>
+              <div class="kpi-number" data-counter="94.2">0</div>
+              <div class="kpi-label">Network Health %</div>
+              <span class="kpi-trend down"><i data-lucide="trending-down"></i> −0.8%</span>
+            </div>
+          </div>
+
+          <!-- Workspace: Map + Priority Panel -->
+          <div class="workspace">
+            <div class="workspace-map">
+              <div class="map-toolbar">
+                <span class="map-toolbar-title">Feeder Risk Map</span>
+                <div class="map-search">
+                  <i data-lucide="search"></i>
+                  <input type="text" placeholder="Search transformer..." onkeydown="if(event.key==='Enter')searchTransformer(this,mapInstance,mapMarkers)">
+                </div>
+                <input type="hidden" id="cmd-map-filter" value="all">
+                <button class="filter-btn cmd-filter-btn active" onclick="filterCommandMap('all')">All</button>
+                <button class="filter-btn cmd-filter-btn" onclick="filterCommandMap('healthy')">Healthy</button>
+                <button class="filter-btn cmd-filter-btn" onclick="filterCommandMap('warning')">At Risk</button>
+                <button class="filter-btn cmd-filter-btn" onclick="filterCommandMap('high')">High Risk</button>
+                <button class="filter-btn cmd-filter-btn" onclick="filterCommandMap('critical')">Critical</button>
+                <button class="cascade-btn" onclick="toggleCascadeMap(mapInstance,mapMarkers,feederLines)">
+                  <i data-lucide="git-merge"></i>
+                  Show Cascade
+                </button>
+              </div>
+              <div class="map-container" id="command-map-container">
+                <div id="command-map"></div>
+                <div class="map-legend">
+                  <div class="legend-item"><span class="legend-dot" style="background:#238636"></span> Healthy</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#D99A00"></span> At Risk</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#E67E22"></span> High Risk</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#C0392B"></span> Critical</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="priority-panel" id="priority-action-panel">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Recent Alerts -->
+          <div class="alerts-section">
+            <h3 class="alerts-section-title">Active Alerts</h3>
+            <div id="recent-alerts">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+      <!-- ======================================================
+           PAGE: RISK MAP
+           ====================================================== -->
+      <div id="page-risk-map" class="page">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Risk Map</span>
+            </div>
+            <h1>Transformer risk across the network.</h1>
+            <p>Visualize transformer health geographically. Identify clusters of risk and potential cascade zones.</p>
+          </div>
+
+          <div class="riskmap-layout">
+            <div class="riskmap-main">
+              <div class="map-toolbar">
+                <span class="map-toolbar-title">Network Overview</span>
+                <div class="map-search">
+                  <i data-lucide="search"></i>
+                  <input type="text" placeholder="Search transformer..." onkeydown="if(event.key==='Enter')searchTransformer(this,riskMapInstance,riskMapMarkers)">
+                </div>
+                <input type="hidden" id="riskmap-filter" value="all">
+                <button class="filter-btn riskmap-filter-btn active" onclick="filterRiskMap('all')">All</button>
+                <button class="filter-btn riskmap-filter-btn" onclick="filterRiskMap('healthy')">Healthy</button>
+                <button class="filter-btn riskmap-filter-btn" onclick="filterRiskMap('warning')">At Risk</button>
+                <button class="filter-btn riskmap-filter-btn" onclick="filterRiskMap('high')">High Risk</button>
+                <button class="filter-btn riskmap-filter-btn" onclick="filterRiskMap('critical')">Critical</button>
+                <button class="cascade-btn" onclick="toggleCascadeMap(riskMapInstance,riskMapMarkers,riskFeederLines)">
+                  <i data-lucide="git-merge"></i>
+                  Show Cascade
+                </button>
+              </div>
+              <div class="riskmap-map-container">
+                <div id="riskmap-map"></div>
+                <div class="map-legend">
+                  <div class="legend-item"><span class="legend-dot" style="background:#238636"></span> Healthy</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#D99A00"></span> At Risk</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#E67E22"></span> High Risk</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#C0392B"></span> Critical</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="riskmap-sidebar">
+              <div class="riskmap-stats-panel">
+                <h3 class="riskmap-stats-title">Network Status</h3>
+                <div id="riskmap-stats">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+      <!-- ======================================================
+           PAGE: PREDICTIONS
+           ====================================================== -->
+      <div id="page-predictions" class="page">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Failure Predictions</span>
+            </div>
+            <h1>Identify transformers showing patterns that precede failure.</h1>
+            <p>AI-driven analysis of historical load patterns detects deterioration trends before they result in transformer failure.</p>
+          </div>
+
+          <div class="predictions-layout">
+            <div class="prediction-main">
+              <div class="pred-featured-card" id="prediction-featured">
+                <!-- Dynamically populated -->
+              </div>
+              <div class="pred-chart-card">
+                <h3 class="pred-chart-title">Load & Risk Prediction Timeline</h3>
+                <div class="pred-chart-container">
+                  <canvas id="prediction-chart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="predictions-sidebar">
+              <span class="predictions-sidebar-title">All Predictions</span>
+              <div id="predictions-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+      <!-- ======================================================
+           PAGE: NETWORK INTELLIGENCE
+           ====================================================== -->
+      <div id="page-network" class="page">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Network Intelligence</span>
+            </div>
+            <h1>Transformer failures rarely happen in isolation.</h1>
+            <p>Understand how failure in one transformer can cascade through the feeder network, stressing connected units and expanding the risk zone.</p>
+          </div>
+
+          <div class="network-layout">
+            <div class="network-main">
+              <div class="network-toolbar">
+                <span class="network-toolbar-title">Feeder Network Graph</span>
+                <button class="btn-simulate" onclick="simulateCascade()">
+                  <i data-lucide="play"></i>
+                  Simulate Cascade
+                </button>
+              </div>
+              <div class="network-canvas-container">
+                <canvas id="network-canvas"></canvas>
+              </div>
+            </div>
+
+            <div class="network-sidebar-panel">
+              <div class="cascade-panel" id="cascade-panel">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+      <!-- ======================================================
+           PAGE: MAINTENANCE PRIORITIES
+           ====================================================== -->
+      <div id="page-priorities" class="page">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Maintenance Priorities</span>
+            </div>
+            <h1>Fix the transformer where intervention matters most.</h1>
+            <p>Risk alone is not enough. Prioritize intervention using technical risk, human impact, seasonality and backup availability.</p>
+          </div>
+
+          <!-- Controls -->
+          <div class="priority-controls">
+            <div class="priority-search">
+              <i data-lucide="search"></i>
+              <input type="text" placeholder="Search transformer..." oninput="searchPriority(this.value)">
+            </div>
+            <button class="filter-btn priority-filter-btn active" onclick="filterPriority('all')">All</button>
+            <button class="filter-btn priority-filter-btn" onclick="filterPriority('critical')">Critical</button>
+            <button class="filter-btn priority-filter-btn" onclick="filterPriority('high')">High Risk</button>
+            <button class="filter-btn priority-filter-btn" onclick="filterPriority('warning')">At Risk</button>
+            <button class="filter-btn priority-filter-btn" onclick="filterPriority('healthy')">Healthy</button>
+          </div>
+
+          <!-- Priority Table -->
+          <div class="priority-table-container">
+            <table class="priority-table">
+              <thead>
+                <tr>
+                  <th onclick="sortPriority('priorityScore')">#</th>
+                  <th onclick="sortPriority('id')">Transformer</th>
+                  <th onclick="sortPriority('risk')">Risk</th>
+                  <th onclick="sortPriority('farmers')">Farmers</th>
+                  <th onclick="sortPriority('season')">Season</th>
+                  <th>Backup</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="priority-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Prioritization Visual -->
+          <div id="prioritization-visual">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+      <!-- ======================================================
+           PAGE: REPORTS
+           ====================================================== -->
+      <div id="page-reports" class="page">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-header-top">
+              <span class="page-label">Network Reports</span>
+            </div>
+            <h1>A clear operational view of transformer health and intervention trends.</h1>
+            <p>Track network performance, failure predictions and maintenance effectiveness over time.</p>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="reports-grid">
+            <div class="report-card">
+              <h3 class="report-card-title">Transformer Health Distribution</h3>
+              <div class="report-chart-container">
+                <canvas id="health-dist-chart"></canvas>
+              </div>
+            </div>
+            <div class="report-card">
+              <h3 class="report-card-title">Risk Score Distribution</h3>
+              <div class="report-chart-container">
+                <canvas id="risk-dist-chart"></canvas>
+              </div>
+            </div>
+            <div class="report-card">
+              <h3 class="report-card-title">Network Health Over Time</h3>
+              <div class="report-chart-container">
+                <canvas id="network-health-chart"></canvas>
+              </div>
+            </div>
+            <div class="report-card">
+              <h3 class="report-card-title">Predictions vs Interventions</h3>
+              <div class="report-chart-container">
+                <canvas id="interventions-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Impact Snapshot -->
+          <div class="impact-section">
+            <h3 class="impact-section-title">Impact Snapshot</h3>
+            <div id="impact-snapshot">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Report Actions -->
+          <div class="report-actions">
+            <button class="btn-primary" onclick="exportReport()">
+              <i data-lucide="file-text"></i>
+              Export Report
+            </button>
+            <button class="btn-outline" onclick="downloadSummary()">
+              <i data-lucide="download"></i>
+              Download Summary
+            </button>
+          </div>
+        </div>
+
+        <footer class="app-footer">
+          Prototype environment — analysis shown using simulated feeder and transformer data.
+        </footer>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+  <script>
+    // Initialize Lucide icons after load
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  </script>
+
+</body>
+</html>
