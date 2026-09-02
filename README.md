@@ -86,6 +86,8 @@ Maintenance Prioritization
      ↓
 Preventive Action
 
+```
+
 ## 🧠 AI Model & Approach
 
 GridGuard uses a **time-series anomaly detection pipeline** to identify hidden transformer stress before failure.
