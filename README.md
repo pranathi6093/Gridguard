@@ -85,3 +85,37 @@ Nearby Transformer Risk
 Maintenance Prioritization
      ↓
 Preventive Action
+
+## 🧠 AI Model & Approach
+
+GridGuard uses a **time-series anomaly detection pipeline** to identify hidden transformer stress before failure.
+
+### Primary AI Model
+**LSTM Autoencoder**
+
+The LSTM Autoencoder learns the normal load/current behaviour of each transformer over time.
+
+When the transformer begins showing unusual patterns such as:
+- Repeated overloads
+- Increasing load stress
+- Abnormal deviations from its normal pattern
+- Sustained changes over multiple time windows
+
+the reconstruction error increases, indicating a potential failure risk.
+
+### AI Pipeline
+
+```text
+Historical Load / Current Data
+            ↓
+     Rolling Time Windows
+            ↓
+       LSTM Autoencoder
+            ↓
+     Anomaly / Reconstruction Score
+            ↓
+      Transformer Risk Score
+            ↓
+   Feeder-Level Risk Analysis
+            ↓
+ Human-Impact Prioritization
